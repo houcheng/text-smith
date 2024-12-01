@@ -91,7 +91,15 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    command = args.command
     action = args.action
     file_path = args.file_path
     model = args.model
-    process_file(action, file_path)
+
+    if command == "write":
+        process_file(action, file_path, model)
+    elif command == "init":
+        print("Initializing configuration...")
+        # Add initialization logic here
+    else:
+        print(f"Unknown command '{command}'.")

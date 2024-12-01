@@ -2,14 +2,14 @@ import os
 import yaml
 # import openrouter
 
-from config import Config
+from config import Config, model_map
+
 
 def load_config(config_path):
-    if os.path.exists(config_path):
-        with open(config_path, 'r') as file:
-            config_data = yaml.safe_load(file)
-            return Config(config_data)
-    return None
+    with open(config_path, 'r') as file:
+        config_data = yaml.safe_load(file)
+        print(config_data)
+        return Config(config_data)
 
 def get_config_path():
     if os.path.exists('.ts.conf.yml'):
@@ -40,33 +40,6 @@ def call_openrouter_api(action, file_content, system_prompts, model="openai/gpt-
     return response.json()['choices'][0]['message']['content']
 
 def process_file(action, file_path, model=None):
-    config_path = get_config_path()
-    if not config_path:
-        print("Configuration file not found.")
-        return
-
-    config = load_config(config_path)
-    if not config:
-        print("Configuration file not found.")
-        return
-
-    system_prompts = config.get_action_prompts(action)
-    if not system_prompts:
-        print(f"Action '{action}' not found in configuration.")
-        return
-
-    model_map = {
-        "qq": "qwen/qwen-2.5-coder-32b-instruct",
-        "qq72": "qwen/qwen-2.5-72b-instruct",
-        "ss": "anthropic/claude-3.5-sonnet",
-        "qwq": "qwen/qwq-32b-preview"
-    }
-
-    if model:
-        model = model_map.get(model, model)
-    else:
-        model = config.get_action_model(action)
-    cache = config.get_action_cache(action)
 
     with open(file_path, 'r') as file:
         file_content = file.read()
@@ -80,6 +53,9 @@ def process_file(action, file_path, model=None):
 
     print(f"Output written to {output_file_path}")
 
+
+
+
 if __name__ == "__main__":
     import sys
     import argparse
@@ -88,14 +64,24 @@ if __name__ == "__main__":
     parser.add_argument("command", help="The command to perform (e.g., write, init)")
     parser.add_argument("action", help="The action to perform (e.g., fix, note, summary)")
     parser.add_argument("file_path", help="The path to the file to process")
-    parser.add_argument("--model", choices=["qq", "qq72", "ss"], help="The model to use (qq: qwen32, qq72: qwen72, ss: sonet3.5)")
+    parser.add_argument("--model", choices=model_map.keys(), default="qq", help="The model to use (qq: qwen32, qq72: qwen72, ss: sonet3.5)")
 
     args = parser.parse_args()
+
+    config_path = get_config_path()
+    if not config_path:
+        raise FileNotFoundError("Configuration file not found")
+    config = load_config(config_path)
+
+    if args.action not in config.actions and args.action != "all":
+        print(f"Unknown action '{action}'.")
+        sys.exit(1)
+
 
     command = args.command
     action = args.action
     file_path = args.file_path
-    model = args.model
+    model = model_map[args.model]
 
     if command == "write":
         process_file(action, file_path, model)

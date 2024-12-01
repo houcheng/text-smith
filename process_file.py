@@ -7,15 +7,24 @@ from config import ActionConfig
 
 
 def call_openrouter_api(file_content: str, user_prompts: str, model: str, cache: bool):
+    # Environment variables used:
+    # - OPENROUTER_API_KEY: Required for API authentication
+    # - YOUR_SITE_URL: Optional, for including your app on openrouter.ai rankings
+    # - YOUR_SITE_NAME: Optional, for including your app on openrouter.ai rankings
+
     api_key = os.getenv('OPENROUTER_API_KEY')
     if not api_key:
         raise ValueError("OPENROUTER_API_KEY environment variable is not set")
     headers = {
         "Authorization": f"Bearer {api_key}",
-        "HTTP-Referer": os.getenv('YOUR_SITE_URL', ''),  # Optional, for including your app on openrouter.ai rankings.
-        "X-Title": os.getenv('YOUR_SITE_NAME', ''),  # Optional. Shows in rankings on openrouter.ai.
         "Content-Type": "application/json"
     }
+    your_site_url = os.getenv('YOUR_SITE_URL')
+    your_site_name = os.getenv('YOUR_SITE_NAME')
+    if your_site_url:
+        headers["HTTP-Referer"] = your_site_url  # Optional, for including your app on openrouter.ai rankings.
+    if your_site_name:
+        headers["X-Title"] = your_site_name  # Optional. Shows in rankings on openrouter.ai.
     messages = [{"role": "system", "content": [{"type": "text", "text": prompt}]} for prompt in user_prompts]
     user_message = [{"type": "text", "text": file_content}]
     if cache:

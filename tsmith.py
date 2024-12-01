@@ -98,14 +98,10 @@ if __name__ == "__main__":
     action = args.action
     file_paths = args.file_paths
     model = model_map[args.model]
+    print("file_paths", file_paths)
+    if not action or not file_paths:
+        print("Action and file_paths are required for the write command.")
+        sys.exit(1)
 
-    if command == "write":
-        if not action or not file_paths:
-            print("Action and file_paths are required for the write command.")
-            sys.exit(1)
-        for file_path in file_paths:
-            process_file(action, file_path, config, model)
-    elif command == "init":
-        process_init_command()
-    else:
-        print(f"Unknown command '{command}'.")
+    for file_path in file_paths:
+        process_file(action, file_path, config, model)

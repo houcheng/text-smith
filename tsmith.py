@@ -120,7 +120,11 @@ def main():
 
     for file_path in expanded_file_paths:
         if action == "all":
-            for config_action in config.actions:
+            # Process actions with no source first
+            for config_action in [act for act in config.actions if not config.actions[act].source]:
+                process_file(config_action, file_path, config, model)
+            # Process actions with a source next
+            for config_action in [act for act in config.actions if config.actions[act].source]:
                 process_file(config_action, file_path, config, model)
         else:
             process_file(action, file_path, config, model)

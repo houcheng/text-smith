@@ -39,7 +39,7 @@ def call_openrouter_api(action, file_content, system_prompts, model="openai/gpt-
     response.raise_for_status()  # Raise an error for bad responses
     return response.json()['choices'][0]['message']['content']
 
-def process_file(action, file_path):
+def process_file(action, file_path, model=None):
     config_path = get_config_path()
     if not config_path:
         print("Configuration file not found.")
@@ -55,7 +55,16 @@ def process_file(action, file_path):
         print(f"Action '{action}' not found in configuration.")
         return
 
-    model = config.get_action_model(action)
+    model_map = {
+        "qq": "qwen32",
+        "qq72": "qwen72",
+        "ss": "sonet3.5"
+    }
+
+    if model:
+        model = model_map.get(model, model)
+    else:
+        model = config.get_action_model(action)
     cache = config.get_action_cache(action)
 
     with open(file_path, 'r') as file:
@@ -72,10 +81,16 @@ def process_file(action, file_path):
 
 if __name__ == "__main__":
     import sys
-    if len(sys.argv) < 3:
-        print("Usage: tsmith.py <action> <file_path>")
-        sys.exit(1)
+    import argparse
 
-    action = sys.argv[1]
-    file_path = sys.argv[2]
+    parser = argparse.ArgumentParser(description="Process files with Openrouter API")
+    parser.add_argument("action", help="The action to perform (e.g., fix, note, summary)")
+    parser.add_argument("file_path", help="The path to the file to process")
+    parser.add_argument("--model", choices=["qq", "qq72", "ss"], help="The model to use (qq: qwen32, qq72: qwen72, ss: sonet3.5)")
+
+    args = parser.parse_args()
+
+    action = args.action
+    file_path = args.file_path
+    model = args.model
     process_file(action, file_path)

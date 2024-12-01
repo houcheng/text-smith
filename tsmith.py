@@ -81,7 +81,7 @@ if __name__ == "__main__":
         raise FileNotFoundError("Configuration file not found")
     config = load_config(config_path)
 
-    if command == "init":
+    if args.command == "init":
         process_init_command()
         sys.exit(0)
 

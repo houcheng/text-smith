@@ -12,12 +12,15 @@ def call_openrouter_api(file_content: str, user_prompts: str, model: str, cache:
         raise ValueError("OPENROUTER_API_KEY environment variable is not set")
     headers = {
         "Authorization": f"Bearer {api_key}",
-        # "HTTP-Referer": "YOUR_SITE_URL",  # Optional, for including your app on openrouter.ai rankings.
-        # "X-Title": "YOUR_SITE_NAME",  # Optional. Shows in rankings on openrouter.ai.
+        "HTTP-Referer": os.getenv('YOUR_SITE_URL', ''),  # Optional, for including your app on openrouter.ai rankings.
+        "X-Title": os.getenv('YOUR_SITE_NAME', ''),  # Optional. Shows in rankings on openrouter.ai.
         "Content-Type": "application/json"
     }
-    messages = [{"role": "system", "content": prompt} for prompt in user_prompts]
-    messages.append({"role": "user", "content": file_content})
+    messages = [{"role": "system", "content": [{"type": "text", "text": prompt}]} for prompt in user_prompts]
+    user_message = [{"type": "text", "text": file_content}]
+    if cache:
+        user_message[0]['cache_control'] = {"type": "ephemeral"}
+    messages.append({"role": "user", "content": user_message})
     body = {
         "model": model,
         "messages": messages

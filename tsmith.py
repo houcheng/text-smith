@@ -56,9 +56,9 @@ def process_file(action, file_path, model=None):
         return
 
     model_map = {
-        "qq": "qwen32",
-        "qq72": "qwen72",
-        "ss": "sonet3.5"
+        "qq": "qwen/qwen-2.5-coder-32b-instruct",
+        "qq72": "qwen/qwen-2.5-72b-instruct",
+        "ss": "anthropic/claude-3.5-sonnet"
     }
 
     if model:

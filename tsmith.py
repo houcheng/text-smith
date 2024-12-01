@@ -37,7 +37,8 @@ def process_init_command() -> None:
     if os.path.exists(config_path):
         print(f"Warning: Configuration file '{config_path}' already exists in the current directory.")
     else:
-        default_config = """fix:
+        default_config = """
+fix:
     - prompts:
         - "The attached file is a transaction by AI."
         - "Fix error and modify if sentence does not make sense."

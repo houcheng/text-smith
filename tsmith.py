@@ -69,9 +69,7 @@ def process_file(action, file_path, config, model=None):
     print(f"Output written to {output_file_path}")
 
 
-
-
-if __name__ == "__main__":
+def main():
     import sys
     import argparse
 
@@ -100,7 +98,6 @@ if __name__ == "__main__":
         print(f"Unknown action '{args.action}'.")
         sys.exit(1)
 
-
     command = args.command
     action = args.action
     file_paths = args.file_paths
@@ -122,3 +119,6 @@ if __name__ == "__main__":
         if action == "all":
             action = get_action_from_path(file_path)
         process_file(action, file_path, config, model)
+
+if __name__ == "__main__":
+    main()

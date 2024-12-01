@@ -24,8 +24,10 @@ class TestCallOpenRouterAPI(unittest.TestCase):
         model = "openai/gpt-3.5-turbo"
         cache = True
 
-        # Call the function
-        result = call_openrouter_api(file_content, user_prompts, model, cache)
+        # Mock the API key
+        with patch.dict(os.environ, {'OPENROUTER_API_KEY': 'mock_api_key'}):
+            # Call the function
+            result = call_openrouter_api(file_content, user_prompts, model, cache)
 
         # Assert the result
         self.assertEqual(result, "Mocked response from API")
@@ -34,7 +36,7 @@ class TestCallOpenRouterAPI(unittest.TestCase):
         mock_post.assert_called_once_with(
             "https://openrouter.ai/api/v1/chat/completions",
             headers={
-                "Authorization": "Bearer None",
+                "Authorization": "Bearer mock_api_key",
                 "Content-Type": "application/json"
             },
             json={

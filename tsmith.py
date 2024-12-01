@@ -70,8 +70,8 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Process files with Openrouter API")
     parser.add_argument("command", help="The command to perform (e.g., write, init)")
-    parser.add_argument("action", help="The action to perform (e.g., fix, note, summary)")
-    parser.add_argument("file_path", help="The path to the file to process")
+    parser.add_argument("action", help="The action to perform (e.g., fix, note, summary)", nargs='?')
+    parser.add_argument("file_path", help="The path to the file to process", nargs='?')
     parser.add_argument("--model", choices=model_map.keys(), default="qq", help="The model to use (qq: qwen32, qq72: qwen72, ss: sonet3.5)")
 
     args = parser.parse_args()
@@ -81,7 +81,11 @@ if __name__ == "__main__":
         raise FileNotFoundError("Configuration file not found")
     config = load_config(config_path)
 
-    if args.action not in config.actions and args.action != "all":
+    if command == "init":
+        process_init_command()
+        sys.exit(0)
+
+    if args.action and args.action not in config.actions and args.action != "all":
         print(f"Unknown action '{args.action}'.")
         sys.exit(1)
 
@@ -91,6 +95,9 @@ if __name__ == "__main__":
     model = model_map[args.model]
 
     if command == "write":
+        if not action or not file_path:
+            print("Action and file_path are required for the write command.")
+            sys.exit(1)
         process_file(action, file_path, config, model)
     elif command == "init":
         process_init_command()

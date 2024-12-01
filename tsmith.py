@@ -1,5 +1,6 @@
 import os
 import yaml
+import glob
 # import openrouter
 
 from config import Config, model_map
@@ -103,5 +104,13 @@ if __name__ == "__main__":
         print("Action and file_paths are required for the write command.")
         sys.exit(1)
 
-    for file_path in file_paths:
+    expanded_file_paths = []
+    for file_pattern in file_paths:
+        expanded_file_paths.extend(glob.glob(file_pattern))
+
+    if not expanded_file_paths:
+        print("No files found matching the provided patterns.")
+        sys.exit(1)
+
+    for file_path in expanded_file_paths:
         process_file(action, file_path, config, model)

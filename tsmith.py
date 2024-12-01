@@ -37,24 +37,24 @@ def process_init_command() -> None:
     if os.path.exists(config_path):
         print(f"Warning: Configuration file '{config_path}' already exists in the current directory.")
     else:
-        default_config = """
-fix:
-    - prompts:
+        default_config = """fix:
+    prompts:
         - "The attached file is a transaction by AI."
         - "Fix error and modify if sentence does not make sense."
-        - "Prevent changes too much"
+        - "Make the article more readable and separate into paragraphs."
+        - "Do not changes too much"
         - "Must write in its origin language"
 note:
-    - source: fix
-    - prompts:
+    source: fix
+    prompts:
         - "Write note for the attached file"
         - "Must write in its origin language"
-    - cache: true
+    cache: true
 summary:
-    - source: fix
-    - prompts:
-        - "Write a summary for the attached file in its origin language."
-    - cache: true
+    source: fix
+    prompts:
+        - "Write a summary for the attched file in its origin language."
+    cache: true
 """
         with open(config_path, 'w') as file:
             file.write(default_config)

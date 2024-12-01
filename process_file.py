@@ -34,6 +34,7 @@ def call_openrouter_api(file_content: str, user_prompts: str, model: str, cache:
           "content": [
               {"type": "text", "text": "Given the attached text below:"},
               {"type": "text", "text": file_content},
+              {"type": "text", "text": "You should reply with ========== as first line then no personal comment just output the processed text."}
           ]
         },
         # 1

@@ -6,11 +6,12 @@ import os
 from config import ActionConfig
 
 
-def call_openrouter_api(file_content: str, user_prompts: str, model: str, cache: bool):
+def call_openrouter_api(file_content: str, user_prompts: str, model: str, cache: bool) -> str:
     # Environment variables used:
     # - OPENROUTER_API_KEY: Required for API authentication
     # - YOUR_SITE_URL: Optional, for including your app on openrouter.ai rankings
     # - YOUR_SITE_NAME: Optional, for including your app on openrouter.ai rankings
+    # Returns the output text from the API
 
     api_key = os.getenv('OPENROUTER_API_KEY')
     if not api_key:
@@ -58,7 +59,7 @@ def process_file(action, file_path, action_config: ActionConfig):
     output_text = call_openrouter_api(file_content, system_prompts, action_config.model, action_config.cache)
 
     base_name, ext = os.path.splitext(file_path)
-    output_file_path = f"{base_name}[{action}].{ext}"
+    output_file_path = f"{base_name}[{action}]{ext}"
     with open(output_file_path, 'w') as output_file:
         output_file.write(output_text)
 

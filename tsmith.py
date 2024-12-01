@@ -16,12 +16,25 @@ def get_config_path():
         return os.path.join(home_dir, '.ts.conf.yml')
     return None
 
+import requests
+
 def call_openrouter_api(action, file_content, system_prompts):
-    client = openrouter.Client(api_key='your_api_key_here')
+    api_key = 'your_api_key_here'
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "HTTP-Referer": "YOUR_SITE_URL",  # Optional, for including your app on openrouter.ai rankings.
+        "X-Title": "YOUR_SITE_NAME",  # Optional. Shows in rankings on openrouter.ai.
+        "Content-Type": "application/json"
+    }
     messages = [{"role": "system", "content": prompt} for prompt in system_prompts]
     messages.append({"role": "user", "content": file_content})
-    response = client.chat(messages)
-    return response['choices'][0]['message']['content']
+    body = {
+        "model": "openai/gpt-3.5-turbo",
+        "messages": messages
+    }
+    response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=body)
+    response.raise_for_status()  # Raise an error for bad responses
+    return response.json()['choices'][0]['message']['content']
 
 def process_file(action, file_path):
     config_path = get_config_path()

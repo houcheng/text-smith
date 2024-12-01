@@ -71,7 +71,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process files with Openrouter API")
     parser.add_argument("command", help="The command to perform (e.g., write, init)")
     parser.add_argument("action", help="The action to perform (e.g., fix, note, summary)", nargs='?')
-    parser.add_argument("file_path", help="The path to the file to process", nargs='?')
+    parser.add_argument("file_paths", help="The path(s) to the file(s) to process", nargs='+')
     parser.add_argument("--model", choices=model_map.keys(), default="qq", help="The model to use (qq: qwen32, qq72: qwen72, ss: sonet3.5)")
 
     args = parser.parse_args()
@@ -96,14 +96,15 @@ if __name__ == "__main__":
 
     command = args.command
     action = args.action
-    file_path = args.file_path
+    file_paths = args.file_paths
     model = model_map[args.model]
 
     if command == "write":
-        if not action or not file_path:
-            print("Action and file_path are required for the write command.")
+        if not action or not file_paths:
+            print("Action and file_paths are required for the write command.")
             sys.exit(1)
-        process_file(action, file_path, config, model)
+        for file_path in file_paths:
+            process_file(action, file_path, config, model)
     elif command == "init":
         process_init_command()
     else:

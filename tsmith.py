@@ -53,7 +53,7 @@ note:
 summary:
     - source: fix
     - prompts:
-        - "Write a summary for the attched file in its origin language."
+        - "Write a summary for the attached file in its origin language."
     - cache: true
 """
         with open(config_path, 'w') as file:

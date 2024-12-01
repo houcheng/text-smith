@@ -33,8 +33,31 @@ def get_config_path() -> str | None:
 
 
 def process_init_command() -> None:
-    print("Initializing configuration...")
-    # Add initialization logic here
+    config_path = '.ts.conf.yml'
+    if os.path.exists(config_path):
+        print(f"Warning: Configuration file '{config_path}' already exists in the current directory.")
+    else:
+        default_config = """fix:
+    - prompts:
+        - "The attached file is a transaction by AI."
+        - "Fix error and modify if sentence does not make sense."
+        - "Prevent changes too much"
+        - "Must write in its origin language"
+note:
+    - source: fix
+    - prompts:
+        - "Write note for the attached file"
+        - "Must write in its origin language"
+    - cache: true
+summary:
+    - source: fix
+    - prompts:
+        - "Write a summary for the attched file in its origin language."
+    - cache: true
+"""
+        with open(config_path, 'w') as file:
+            file.write(default_config)
+        print(f"Configuration file '{config_path}' created in the current directory.")
 
 
 def main():

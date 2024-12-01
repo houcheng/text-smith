@@ -84,6 +84,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Process files with Openrouter API")
+    parser.add_argument("command", help="The command to perform (e.g., write, init)")
     parser.add_argument("action", help="The action to perform (e.g., fix, note, summary)")
     parser.add_argument("file_path", help="The path to the file to process")
     parser.add_argument("--model", choices=["qq", "qq72", "ss"], help="The model to use (qq: qwen32, qq72: qwen72, ss: sonet3.5)")

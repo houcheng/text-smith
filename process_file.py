@@ -31,7 +31,8 @@ def call_openrouter_api(file_content: str, user_prompts: str, model: str, cache:
     ]
     if cache:
         messages[1]["content"][0]['cache_control'] = {"type": "ephemeral"}
-    messages.append({"role": "system", "content": [{"type": "text", "text": prompt}] for prompt in user_prompts])
+    for prompt in user_prompts:
+        messages.append({"role": "system", "content": [{"type": "text", "text": prompt}]})
     body = {
         "model": model,
         "messages": messages

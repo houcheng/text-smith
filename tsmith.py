@@ -53,7 +53,7 @@ def process_init_command():
     print("Initializing configuration...")
     # Add initialization logic here
 
-def process_file(action, file_path, config, model=None):
+def process_file(action, file_path, config, model):
     with open(file_path, 'r') as file:
         file_content = file.read()
 

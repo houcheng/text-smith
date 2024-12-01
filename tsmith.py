@@ -39,11 +39,19 @@ def call_openrouter_api(action, file_content, system_prompts, model="openai/gpt-
     response.raise_for_status()  # Raise an error for bad responses
     return response.json()['choices'][0]['message']['content']
 
-def process_file(action, file_path, model=None):
+def process_init_command():
+    print("Initializing configuration...")
+    # Add initialization logic here
 
+def process_file(action, file_path, config, model=None):
     with open(file_path, 'r') as file:
         file_content = file.read()
 
+    action_config = config.actions.get(action)
+    if not action_config:
+        raise ValueError(f"Action '{action}' not found in config")
+
+    system_prompts = action_config.get_prompts(config)
     output_text = call_openrouter_api(action, file_content, system_prompts, model)
 
     base_name, ext = os.path.splitext(file_path)
@@ -74,9 +82,8 @@ if __name__ == "__main__":
     config = load_config(config_path)
 
     if args.action not in config.actions and args.action != "all":
-        print(f"Unknown action '{action}'.")
+        print(f"Unknown action '{args.action}'.")
         sys.exit(1)
-
 
     command = args.command
     action = args.action
@@ -84,8 +91,8 @@ if __name__ == "__main__":
     model = model_map[args.model]
 
     if command == "write":
-        process_file(action, file_path, model)
+        process_file(action, file_path, config, model)
     elif command == "init":
-        print("Initializing configuration...")
+        process_init_command()
     else:
         print(f"Unknown command '{command}'.")

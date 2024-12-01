@@ -8,8 +8,11 @@ from config import Config, model_map
 def get_action_from_path(file_path):
     """Extract the action from the file path."""
     base_name = os.path.splitext(file_path)[0]
-    action = base_name.split('[')[-1].split(']')[0]
-    return action
+    parts = base_name.split('[')
+    if len(parts) > 1:
+        action = parts[-1].split(']')[0]
+        return action
+    return None
 
 
 def load_config(config_path):
@@ -109,7 +112,7 @@ def main():
 
     expanded_file_paths = []
     for file_pattern in file_paths:
-        expanded_file_paths.extend(glob.glob(file_pattern))
+        expanded_file_paths.extend([f for f in glob.glob(file_pattern) if get_action_from_path(f) is None])
 
     if not expanded_file_paths:
         print("No files found matching the provided patterns.")

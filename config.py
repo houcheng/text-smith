@@ -16,12 +16,12 @@ class ActionConfig:
 
     def get_prompts(self, config):
         if self.prompts:
-            return self.prompts
+            return '\n'.join(self.prompts)
         elif self.source:
             source_action = config.get(self.source)
             if source_action:
                 return source_action.get_prompts(config)
-        return []
+        return ''
 
     def get_model(self):
         return self.model

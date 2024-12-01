@@ -51,10 +51,10 @@ def call_openrouter_api(file_content: str, user_prompts: str, model: str, cache:
     # print(response.json())
     response_content = response.json()['choices'][0]['message']['content']
     lines = response_content.split('\n')
-    if lines[0] == '=':
+    if lines[0].startswith('====='):
         response_content = '\n'.join(lines[1:])
     else:
-        print("Warning: Format not aligned. The response does not start with '='.")
+        print("Warning: Format not aligned. The response does not start with '====='.")
     print(response_content)
     return response_content
 

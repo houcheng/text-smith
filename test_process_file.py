@@ -24,10 +24,8 @@ class TestCallOpenRouterAPI(unittest.TestCase):
         model = "openai/gpt-3.5-turbo"
         cache = True
 
-        # Mock the API key
-        with patch.dict(os.environ, {'OPENROUTER_API_KEY': 'mock_api_key'}):
-            # Call the function
-            result = call_openrouter_api(file_content, user_prompts, model, cache)
+        # Call the function
+        result = call_openrouter_api(file_content, user_prompts, model, cache)
 
         # Assert the result
         self.assertEqual(result, "Mocked response from API")

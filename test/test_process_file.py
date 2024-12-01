@@ -34,7 +34,7 @@ class TestCallOpenRouterAPI(unittest.TestCase):
         mock_post.assert_called_once_with(
             "https://openrouter.ai/api/v1/chat/completions",
             headers={
-                "Authorization": "Bearer None",
+                "Authorization": "Bearer mock_api_key",
                 "Content-Type": "application/json"
             },
             json={
@@ -57,7 +57,7 @@ class TestCallOpenRouterAPI(unittest.TestCase):
                         ]
                     },
                     {
-                        "role": "system",
+                        "role": "user",
                         "content": [
                             {
                                 "type": "text",

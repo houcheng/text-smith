@@ -100,6 +100,5 @@ if __name__ == "__main__":
         process_file(action, file_path, model)
     elif command == "init":
         print("Initializing configuration...")
-        # Add initialization logic here
     else:
         print(f"Unknown command '{command}'.")

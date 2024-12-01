@@ -21,7 +21,7 @@ def get_config_path():
 
 import requests
 
-def call_openrouter_api(action, file_content, system_prompts):
+def call_openrouter_api(action, file_content, system_prompts, model="openai/gpt-3.5-turbo"):
     api_key = 'your_api_key_here'
     headers = {
         "Authorization": f"Bearer {api_key}",
@@ -32,7 +32,7 @@ def call_openrouter_api(action, file_content, system_prompts):
     messages = [{"role": "system", "content": prompt} for prompt in system_prompts]
     messages.append({"role": "user", "content": file_content})
     body = {
-        "model": "openai/gpt-3.5-turbo",
+        "model": model,
         "messages": messages
     }
     response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=body)
@@ -55,11 +55,13 @@ def process_file(action, file_path):
         print(f"Action '{action}' not found in configuration.")
         return
 
+    model = config.get_action_model(action)
+    cache = config.get_action_cache(action)
+
     with open(file_path, 'r') as file:
         file_content = file.read()
 
-    system_prompts = config[action]
-    output_text = call_openrouter_api(action, file_content, system_prompts)
+    output_text = call_openrouter_api(action, file_content, system_prompts, model)
 
     base_name, ext = os.path.splitext(file_path)
     output_file_path = f"{base_name}-{action}{ext}"

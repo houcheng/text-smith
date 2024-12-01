@@ -120,8 +120,10 @@ def main():
 
     for file_path in expanded_file_paths:
         if action == "all":
-            action = get_action_from_path(file_path)
-        process_file(action, file_path, config, model)
+            for config_action in config.actions:
+                process_file(config_action, file_path, config, model)
+        else:
+            process_file(action, file_path, config, model)
 
 if __name__ == "__main__":
     main()

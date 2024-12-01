@@ -23,3 +23,36 @@ fetch("https://openrouter.ai/api/v1/chat/completions", {
   })
 });
 ```
+
+## Call openai api cache prompt
+
+```
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": [
+        {
+          "type": "text",
+          "text": "Given the attached text below:"
+        },
+        {
+          "type": "text",
+          "text": "HUGE TEXT BODY",
+          "cache_control": {
+            "type": "ephemeral"
+          }
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "text": "What triggered the collapse?"
+        }
+      ]
+    }
+  ]
+}```

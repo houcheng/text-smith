@@ -2,7 +2,8 @@ fix:
     prompts:
         - "The attached file is a transaction by AI."
         - "Fix error and modify if sentence does not make sense."
-        - "Prevent changes too much"
+        - "Make the article more readable and separate into paragraphs."
+        - "Do not changes too much"
         - "Must write in its origin language"
 note:
     source: fix

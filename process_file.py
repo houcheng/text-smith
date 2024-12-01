@@ -25,20 +25,29 @@ def call_openrouter_api(file_content: str, user_prompts: str, model: str, cache:
         headers["HTTP-Referer"] = your_site_url  # Optional, for including your app on openrouter.ai rankings.
     if your_site_name:
         headers["X-Title"] = your_site_name  # Optional. Shows in rankings on openrouter.ai.
+
+    # https://openrouter.ai/docs/prompt-caching
     messages = [
-        {"role": "system", "content": [{"type": "text", "text": "Given the attached text below:"}]},
-        {"role": "user", "content": [{"type": "text", "text": file_content}]}
+        # 0
+        { "role": "system",
+          "content": [
+              {"type": "text", "text": "Given the attached text below:"},
+              {"type": "text", "text": file_content},
+          ]
+        },
+        # 1
+        {"role": "user", "content": [{"type": "text", "text": user_prompts}]}
     ]
     if cache:
-        messages[1]["content"][0]['cache_control'] = {"type": "ephemeral"}
-    if user_prompts:
-        messages.append({"role": "user", "content": [{"type": "text", "text": "\n".join(user_prompts)}]})
+        messages[1]["content"][1]['cache_control'] = {"type": "ephemeral"}
     body = {
         "model": model,
         "messages": messages
     }
     response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=body)
     response.raise_for_status()  # Raise an error for bad responses
+    # print(response.json())
+    print(response.json()['choices'][0]['message']['content'])
     return response.json()['choices'][0]['message']['content']
 
 def process_file(action, file_path, action_config: ActionConfig):

@@ -2,11 +2,14 @@ import os
 import yaml
 import openrouter
 
+from config import Config
+
 def load_config(config_path):
     if os.path.exists(config_path):
         with open(config_path, 'r') as file:
-            return yaml.safe_load(file)
-    return {}
+            config_data = yaml.safe_load(file)
+            return Config(config_data)
+    return None
 
 def get_config_path():
     if os.path.exists('.ts.conf.yml'):
@@ -43,7 +46,12 @@ def process_file(action, file_path):
         return
 
     config = load_config(config_path)
-    if action not in config:
+    if not config:
+        print("Configuration file not found.")
+        return
+
+    system_prompts = config.get_action_prompts(action)
+    if not system_prompts:
         print(f"Action '{action}' not found in configuration.")
         return
 

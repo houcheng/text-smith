@@ -1,8 +1,12 @@
 import os
 import requests
 
+import os
+
 def call_openrouter_api(action, file_content, system_prompts, model="openai/gpt-3.5-turbo"):
-    api_key = 'your_api_key_here'
+    api_key = os.getenv('OPENROUTER_API_KEY')
+    if not api_key:
+        raise ValueError("OPENROUTER_API_KEY environment variable is not set")
     headers = {
         "Authorization": f"Bearer {api_key}",
         # "HTTP-Referer": "YOUR_SITE_URL",  # Optional, for including your app on openrouter.ai rankings.

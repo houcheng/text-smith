@@ -16,6 +16,11 @@ The output file for "all" action would be:
 - Metting-20241112-note.md
 - Metting-20241112-.md
 
+
+Another usage:
+
+ts $action --config new-config.yml Meeting.md
+
 ### Configuration file
 
 - File name: .ts.conf.yml

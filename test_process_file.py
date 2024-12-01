@@ -57,7 +57,7 @@ class TestCallOpenRouterAPI(unittest.TestCase):
                         ]
                     },
                     {
-                        "role": "system",
+                        "role": "user",
                         "content": [
                             {
                                 "type": "text",

@@ -76,11 +76,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    config_path = get_config_path()
-    if not config_path:
-        raise FileNotFoundError("Configuration file not found")
-    config = load_config(config_path)
-
     if args.command == "init":
         process_init_command()
         sys.exit(0)
@@ -88,6 +83,11 @@ if __name__ == "__main__":
     if args.action and args.action not in config.actions and args.action != "all":
         print(f"Unknown action '{args.action}'.")
         sys.exit(1)
+
+    config_path = get_config_path()
+    if not config_path:
+        raise FileNotFoundError("Configuration file not found")
+    config = load_config(config_path)
 
     command = args.command
     action = args.action

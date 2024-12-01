@@ -1,3 +1,2 @@
-langchain
-openrouter
 requests
+pyyaml

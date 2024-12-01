@@ -8,7 +8,7 @@ from config import Config, model_map
 def get_action_from_path(file_path):
     """Extract the action from the file path."""
     base_name = os.path.splitext(file_path)[0]
-    action = base_name.split('-')[-1]
+    action = base_name.split('[')[-1].split(']')[0]
     return action
 
 

@@ -5,6 +5,12 @@ import glob
 
 from config import Config, model_map
 
+def get_action_from_path(file_path):
+    """Extract the action from the file path."""
+    base_name = os.path.splitext(file_path)[0]
+    action = base_name.split('-')[-1]
+    return action
+
 
 def load_config(config_path):
     with open(config_path, 'r') as file:
@@ -71,7 +77,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Process files with Openrouter API")
     parser.add_argument("command", help="The command to perform (e.g., write, init)")
-    parser.add_argument("action", help="The action to perform (e.g., fix, note, summary)", nargs='?')
+    parser.add_argument("action", help="The action to perform (e.g., fix, note, summary, all)", nargs='?')
     parser.add_argument("file_paths", help="The path(s) to the file(s) to process", nargs='+')
     parser.add_argument("--model", choices=model_map.keys(), default="qq", help="The model to use (qq: qwen32, qq72: qwen72, ss: sonet3.5)")
 
@@ -113,4 +119,6 @@ if __name__ == "__main__":
         sys.exit(1)
 
     for file_path in expanded_file_paths:
+        if action == "all":
+            action = get_action_from_path(file_path)
         process_file(action, file_path, config, model)

@@ -17,13 +17,13 @@ def get_action_from_path(file_path):
     return None
 
 
-def load_config(config_path, model):
+def load_config(config_path, model) -> Config:
     with open(config_path, 'r') as file:
         config_data = yaml.safe_load(file)
         print(config_data)
         return Config(config_data, model)
 
-def get_config_path():
+def get_config_path() -> str | None:
     if os.path.exists('.ts.conf.yml'):
         return '.ts.conf.yml'
     home_dir = os.path.expanduser('~')
@@ -32,7 +32,7 @@ def get_config_path():
     return None
 
 
-def process_init_command():
+def process_init_command() -> None:
     print("Initializing configuration...")
     # Add initialization logic here
 
@@ -85,12 +85,12 @@ def main():
         if action == "all":
             # Process actions with no source first
             for config_action in [act for act in config.actions if not config.actions[act].source]:
-                process_file(config_action, file_path, config[config_action])
+                process_file(config_action, file_path, config.actions[config_action])
             # Process actions with a source next
             for config_action in [act for act in config.actions if config.actions[act].source]:
-                process_file(config_action, file_path, config)
+                process_file(config_action, file_path, config.actions[config_action])
         else:
-            process_file(action, file_path, config)
+            process_file(action, file_path, config.actions[action])
 
 if __name__ == "__main__":
     main()

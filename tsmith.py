@@ -1,6 +1,6 @@
 import os
 import yaml
-import openrouter
+# import openrouter
 
 from config import Config
 

@@ -41,7 +41,7 @@ def main():
     import sys
     import argparse
 
-    parser = argparse.ArgumentParser(description="Process files with Openrouter API")
+    parser = argparse.ArgumentParser(description="Process files with Openrouter API\nDefault config is .ts.conf.yml in home or current directory")
     parser.add_argument("command", help="The command to perform (e.g., write, init)")
     parser.add_argument("action", help="The action to perform (e.g., fix, note, summary, all)", nargs='?')
     parser.add_argument("file_paths", help="The path(s) to the file(s) to process", nargs='+')

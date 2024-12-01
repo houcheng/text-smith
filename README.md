@@ -30,13 +30,20 @@ ts $action --config new-config.yml Meeting.md
 
 ```yml
 - fix:
-    - "The attached file is a transaction by AI."
-    - "Fix error and modify if sentence does not make sense."
-    - "Prevent changes too much"
-    - "Must write in its origin language"
+    - pompts:
+        - "The attached file is a transaction by AI."
+        - "Fix error and modify if sentence does not make sense."
+        - "Prevent changes too much"
+        - "Must write in its origin language"
 - note:
-    - "Write note for the attached file"
-    - "Must write in its origin language"
+    - source: fix
+    - pompts:
+        - "Write note for the attached file"
+        - "Must write in its origin language"
+    - cache: true
 - summary:
-    - "Write a summary for the attched file in its origin language."
+    - source: fix
+    - pompts:
+        - "Write a summary for the attched file in its origin language."
+    - cache: true
 ```

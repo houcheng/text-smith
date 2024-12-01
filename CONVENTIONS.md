@@ -1,8 +1,9 @@
 
 ## Call open router api
 
+Example openrouter api call
 
-```py
+```
 fetch("https://openrouter.ai/api/v1/chat/completions", {
   method: "POST",
   headers: {

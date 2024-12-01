@@ -3,17 +3,20 @@ import requests
 
 import os
 
-def call_openrouter_api(action, file_content, system_prompts, model="openai/gpt-3.5-turbo"):
+from config import ActionConfig
+
+
+def call_openrouter_api(file_content: str, user_prompts: str, model: str, cache: bool):
     api_key = os.getenv('OPENROUTER_API_KEY')
     if not api_key:
         raise ValueError("OPENROUTER_API_KEY environment variable is not set")
     headers = {
         "Authorization": f"Bearer {api_key}",
         # "HTTP-Referer": "YOUR_SITE_URL",  # Optional, for including your app on openrouter.ai rankings.
-        "X-Title": "YOUR_SITE_NAME",  # Optional. Shows in rankings on openrouter.ai.
+        # "X-Title": "YOUR_SITE_NAME",  # Optional. Shows in rankings on openrouter.ai.
         "Content-Type": "application/json"
     }
-    messages = [{"role": "system", "content": prompt} for prompt in system_prompts]
+    messages = [{"role": "system", "content": prompt} for prompt in user_prompts]
     messages.append({"role": "user", "content": file_content})
     body = {
         "model": model,
@@ -23,19 +26,15 @@ def call_openrouter_api(action, file_content, system_prompts, model="openai/gpt-
     response.raise_for_status()  # Raise an error for bad responses
     return response.json()['choices'][0]['message']['content']
 
-def process_file(action, file_path, config, model):
+def process_file(action, file_path, action_config: ActionConfig):
     with open(file_path, 'r') as file:
         file_content = file.read()
 
-    action_config = config.actions.get(action)
-    if not action_config:
-        raise ValueError(f"Action '{action}' not found in config")
-
-    system_prompts = action_config.get_prompts(config)
-    output_text = call_openrouter_api(action, file_content, system_prompts, model)
+    system_prompts = action_config.get_prompts()
+    output_text = call_openrouter_api(file_content, system_prompts, action_config.model, action_config.cache)
 
     base_name, ext = os.path.splitext(file_path)
-    output_file_path = f"{base_name}-{action}{ext}"
+    output_file_path = f"{base_name}[{action}].{ext}"
     with open(output_file_path, 'w') as output_file:
         output_file.write(output_text)
 

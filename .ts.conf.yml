@@ -1,0 +1,17 @@
+fix:
+    prompts:
+        - "The attached file is a transaction by AI."
+        - "Fix error and modify if sentence does not make sense."
+        - "Prevent changes too much"
+        - "Must write in its origin language"
+note:
+    source: fix
+    prompts:
+        - "Write note for the attached file"
+        - "Must write in its origin language"
+    cache: true
+summary:
+    source: fix
+    prompts:
+        - "Write a summary for the attched file in its origin language."
+    cache: true

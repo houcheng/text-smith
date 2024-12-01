@@ -4,6 +4,8 @@ import glob
 # import openrouter
 
 from config import Config, model_map
+from process_file import process_file
+
 
 def get_action_from_path(file_path):
     """Extract the action from the file path."""
@@ -15,11 +17,11 @@ def get_action_from_path(file_path):
     return None
 
 
-def load_config(config_path):
+def load_config(config_path, model):
     with open(config_path, 'r') as file:
         config_data = yaml.safe_load(file)
         print(config_data)
-        return Config(config_data)
+        return Config(config_data, model)
 
 def get_config_path():
     if os.path.exists('.ts.conf.yml'):
@@ -29,47 +31,10 @@ def get_config_path():
         return os.path.join(home_dir, '.ts.conf.yml')
     return None
 
-import requests
-
-def call_openrouter_api(action, file_content, system_prompts, model="openai/gpt-3.5-turbo"):
-    api_key = 'your_api_key_here'
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "HTTP-Referer": "YOUR_SITE_URL",  # Optional, for including your app on openrouter.ai rankings.
-        "X-Title": "YOUR_SITE_NAME",  # Optional. Shows in rankings on openrouter.ai.
-        "Content-Type": "application/json"
-    }
-    messages = [{"role": "system", "content": prompt} for prompt in system_prompts]
-    messages.append({"role": "user", "content": file_content})
-    body = {
-        "model": model,
-        "messages": messages
-    }
-    response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=body)
-    response.raise_for_status()  # Raise an error for bad responses
-    return response.json()['choices'][0]['message']['content']
 
 def process_init_command():
     print("Initializing configuration...")
     # Add initialization logic here
-
-def process_file(action, file_path, config, model):
-    with open(file_path, 'r') as file:
-        file_content = file.read()
-
-    action_config = config.actions.get(action)
-    if not action_config:
-        raise ValueError(f"Action '{action}' not found in config")
-
-    system_prompts = action_config.get_prompts(config)
-    output_text = call_openrouter_api(action, file_content, system_prompts, model)
-
-    base_name, ext = os.path.splitext(file_path)
-    output_file_path = f"{base_name}-{action}{ext}"
-    with open(output_file_path, 'w') as output_file:
-        output_file.write(output_text)
-
-    print(f"Output written to {output_file_path}")
 
 
 def main():
@@ -95,21 +60,19 @@ def main():
     config_path = get_config_path()
     if not config_path:
         raise FileNotFoundError("Configuration file not found")
-    config = load_config(config_path)
+    config = load_config(config_path, model_map[args.model])
 
     if args.action and args.action not in config.actions and args.action != "all":
         print(f"Unknown action '{args.action}'.")
         sys.exit(1)
 
-    command = args.command
-    action = args.action
     file_paths = args.file_paths
-    model = model_map[args.model]
-    print("file_paths", file_paths)
+    action = args.action
     if not action or not file_paths:
         print("Action and file_paths are required for the write command.")
         sys.exit(1)
 
+    print("file_paths", file_paths)
     expanded_file_paths = []
     for file_pattern in file_paths:
         expanded_file_paths.extend([f for f in glob.glob(file_pattern) if get_action_from_path(f) is None])
@@ -122,12 +85,12 @@ def main():
         if action == "all":
             # Process actions with no source first
             for config_action in [act for act in config.actions if not config.actions[act].source]:
-                process_file(config_action, file_path, config, model)
+                process_file(config_action, file_path, config[config_action])
             # Process actions with a source next
             for config_action in [act for act in config.actions if config.actions[act].source]:
-                process_file(config_action, file_path, config, model)
+                process_file(config_action, file_path, config)
         else:
-            process_file(action, file_path, config, model)
+            process_file(action, file_path, config)
 
 if __name__ == "__main__":
     main()

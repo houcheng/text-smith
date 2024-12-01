@@ -14,14 +14,8 @@ class ActionConfig:
         self.cache = cache
         self.model = model
 
-    def get_prompts(self, config):
-        if self.prompts:
-            return '\n'.join(self.prompts)
-        elif self.source:
-            source_action = config.get(self.source)
-            if source_action:
-                return source_action.get_prompts(config)
-        return ''
+    def get_prompts(self):
+        return '\n'.join(self.prompts)
 
     def get_model(self):
         return self.model
@@ -30,7 +24,7 @@ class ActionConfig:
         return self.cache
 
 class Config:
-    def __init__(self, config_data):
+    def __init__(self, config_data, model: str):
         self.actions = {}
         print(config_data)
         for key in config_data.keys():
@@ -38,6 +32,6 @@ class Config:
                 ActionConfig(config_data[key].get('prompts', ''),
                              config_data[key].get('source', ''),
                              config_data[key].get('cache', False),
-                             config_data[key].get('model', "openai/gpt-3.5-turbo"))
+                             model)
         self.config_data = {action: ActionConfig(data.get('prompts'), data.get('source'), data.get('cache', False), data.get('model', "openai/gpt-3.5-turbo")) for action, data in config_data.items()}
 

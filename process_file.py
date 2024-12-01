@@ -49,8 +49,14 @@ def call_openrouter_api(file_content: str, user_prompts: str, model: str, cache:
     response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=body)
     response.raise_for_status()  # Raise an error for bad responses
     # print(response.json())
-    print(response.json()['choices'][0]['message']['content'])
-    return response.json()['choices'][0]['message']['content']
+    response_content = response.json()['choices'][0]['message']['content']
+    lines = response_content.split('\n')
+    if lines[0] == '=':
+        response_content = '\n'.join(lines[1:])
+    else:
+        print("Warning: Format not aligned. The response does not start with '='.")
+    print(response_content)
+    return response_content
 
 def process_file(action, file_path, action_config: ActionConfig):
     with open(file_path, 'r') as file:

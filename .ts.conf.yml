@@ -1,18 +1,77 @@
-fix:
+fix2:
     prompts:
-        - "The attached file is a transaction by AI."
-        - "Fix error and modify if sentence does not make sense."
-        - "Make the article more readable and separate into paragraphs."
-        - "Do not changes too much"
-        - "Must write in its origin language"
+        - "The attached text is a transcription of meeting written by AI."
+        - "Fix error and hallucination, modify if sentence does not make sense."
+        - "Remove the timestamps"
+        - "Merge the continuous sentences into a paragraph if they are related or no time gap. If time gap, break into paragraphs."
+        - "Write in its origin language, do not translate."
+        - "Write the fixed transcription as detail as possible and at least 10K characters."
+        - "Any skipped or missing information would be considered as task failure."
+    cache: true
+# this works good with qq72
+# works better if cut into 2K chunks
+fix3:
+    prompts:
+        - "The attached text is a transcription of meeting written by AI."
+        - "Fix error and hallucination, remove if sentence or words does not make sense."
+        - "Try to merge continuous transcript line into one line if they should in the same complete sentence."
+        - "One sentence per line."
+        # - "Several continuous sentences is a paragraph."
+        - "The timestamp is in format *00:02:01* or 00:02:01. Write an extra empty line before the timestamp."
+        - "Do not have empty line unless there is a timestamp"
+        # - "If a new topic starts or previous topic ends, add empty line."
+        - "Any skipped or missing information would be considered as task failure."
+    timestamp_chunk: 4000
 note:
-    source: fix
+    # source: fix
     prompts:
-        - "Write note for the attached file"
-        - "Must write in its origin language"
+        - "The attached text is a transcription of meeting written by AI."
+        - "Fix error and hallucination, figure its meaning if sentence does not make sense."
+        - "Write note for the attached text in its origin language."
+        - "The note should have introduction, paragraphs, items during the discussion and summarization"
+    cache: true
+note2:
+    # source: fix
+    prompts:
+        - "The attached text is a transcription of meeting written by AI."
+        - "Fix error and hallucination, figure its meaning if sentence does not make sense."
+        - "Write note for the attached text in its origin language with at least 10K characters."
+        - "The note should have introduction, paragraphs, items during the discussion and summarization"
+        - "Write the note as detail as possible."
+        - "Any skipped or missing information would be considered as task failure."
     cache: true
 summary:
-    source: fix
+    # source: fix
     prompts:
-        - "Write a summary for the attched file in its origin language."
+        - "The attached text is a transcription of meeting written by AI."
+        - "Fix error and hallucination, figure its meaning if sentence does not make sense."
+        - "Write a summary for the attached text in its origin language."
+        - "The summary should be in items and structured format."
+    cache: true
+flow2:
+    # source: fix
+    prompts:
+        - "The attached text is a transcription of meeting written by AI."
+        - "Fix error and hallucination, figure its meaning if sentence does not make sense."
+        - "Draw ascii diagram of ideas in the attached text."
+        - "Also draw ascii diagram of ideas as entities and relations among entities in the attached text."
+        - "The draw text must in its origin language."
+    cache: true
+topic:
+    # source: fix
+    prompts:
+        - "The attached text is a transcription of meeting written by AI."
+        - "Fix error and hallucination, figure its meaning if sentence does not make sense."
+        - "find some topics during the discussion from start to end then draw ascii flow of these topics from top to bottom, start to end."
+        - "the topics should be less then 10."
+    cache: true
+
+topic2:
+    # source: fix
+    prompts:
+        - "The attached text is a transcription of meeting written by AI."
+        - "Fix error and hallucination, figure its meaning if sentence does not make sense."
+        - "find some topics during the discussion from start to end then draw ascii flow of these topics from top to bottom, start to end."
+        - "Must write the topics in its origin language."
+        - "the topics should be less then 10."
     cache: true

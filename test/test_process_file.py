@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 import os
-from process_file import call_openrouter_api
+from tsmith.process_file import call_openrouter_api
 
 class TestCallOpenRouterAPI(unittest.TestCase):
     @patch('process_file.requests.post')

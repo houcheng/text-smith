@@ -24,36 +24,36 @@ def load_config(config_path, model) -> Config:
         return Config(config_data, model)
 
 def get_config_path() -> str | None:
-    if os.path.exists('.ts.conf.yml'):
+    if os.path.exists('../.ts.conf.yml'):
         return '.ts.conf.yml'
     home_dir = os.path.expanduser('~')
-    if os.path.exists(os.path.join(home_dir, '.ts.conf.yml')):
-        return os.path.join(home_dir, '.ts.conf.yml')
+    if os.path.exists(os.path.join(home_dir, '../.ts.conf.yml')):
+        return os.path.join(home_dir, '../.ts.conf.yml')
     return None
 
 
 def process_init_command() -> None:
-    config_path = '.ts.conf.yml'
+    config_path = '../.ts.conf.yml'
     if os.path.exists(config_path):
         print(f"Warning: Configuration file '{config_path}' already exists in the current directory.")
     else:
         default_config = """fix:
     prompts:
-        - "The attached file is a transaction by AI."
+        - "The attached text is transaction text by AI."
         - "Fix error and modify if sentence does not make sense."
+        - "Fix hallucination and make the sentence more readable."
         - "Make the article more readable and separate into paragraphs."
         - "Do not changes too much"
         - "Must write in its origin language"
 note:
     source: fix
     prompts:
-        - "Write note for the attached file"
-        - "Must write in its origin language"
+        - "Write note for the attached text in its origin language."
     cache: true
 summary:
     source: fix
     prompts:
-        - "Write a summary for the attched file in its origin language."
+        - "Write a summary for the attached text in its origin language."
     cache: true
 """
         with open(config_path, 'w') as file:
@@ -62,6 +62,7 @@ summary:
 
 
 def main():
+    print("tsmith command is running.")
     import sys
     import argparse
 
@@ -69,7 +70,7 @@ def main():
     parser.add_argument("command", help="The command to perform (e.g., write, init)")
     parser.add_argument("action", help="The action to perform (e.g., fix, note, summary, all)", nargs='?')
     parser.add_argument("file_paths", help="The path(s) to the file(s) to process", nargs='*')
-    parser.add_argument("--model", choices=model_map.keys(), default="qq", help="The model to use (qq: qwen32, qq72: qwen72, ss: sonet3.5)")
+    parser.add_argument("--model", choices=model_map.keys(), default="qq", help="The model to use (qq: qwen32, qq72: qwen72, ss: sonnet3.5)")
 
     args = parser.parse_args()
 

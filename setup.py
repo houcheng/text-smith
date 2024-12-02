@@ -5,7 +5,6 @@ setup(
     version='0.1.0',
     packages=find_packages(),
     install_requires=[
-        'langchain',
         'openrouter',
     ],
     entry_points={
@@ -25,4 +24,5 @@ setup(
         'Operating System :: OS Independent',
     ],
     python_requires='>=3.6',
+    include_package_data=True,
 )

@@ -69,3 +69,19 @@ summary:
 - qq: "qwen/qwen-2.5-coder-32b-instruct"
 - ss: "anthropic/claude-3.5-sonnet"
 - qq72: "qwen/qwen-2.5-72b-instruct"
+
+## Building the Wheel
+
+To build the wheel for the package, follow these steps:
+
+1. Ensure you have `setuptools` and `wheel` installed:
+   ```bash
+   pip install setuptools wheel
+   ```
+
+2. Build the wheel:
+   ```bash
+   python setup.py sdist bdist_wheel
+   ```
+
+The wheel will be located in the `dist` directory.

@@ -3,5 +3,4 @@ IMPORTANT RULES:
 1. You MUST process COMPLETE text and return the COMPLETE text
 2. NO "[續原文內容省略]" or similar skip markers.
 3. Output in attached text's origin language.
-4. Output in traditional chinese if origin language is Chinese.
-5. Failure to process the complete text is considered task failure.
+4. Failure to process the complete text is considered task failure.

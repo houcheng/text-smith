@@ -1,8 +1,6 @@
 import os
 import yaml
 import glob
-# import openrouter
-
 from config import Config, model_map
 from process_file import process_file
 
@@ -10,9 +8,9 @@ from process_file import process_file
 def get_action_from_path(file_path):
     """Extract the action from the file path."""
     base_name = os.path.splitext(file_path)[0]
-    parts = base_name.split('[')
+    parts = base_name.split('@')
     if len(parts) > 1:
-        action = parts[-1].split(']')[0]
+        action = parts[-1]
         return action
     return None
 
@@ -20,7 +18,6 @@ def get_action_from_path(file_path):
 def load_config(config_path, model, file_path: str | None = None) -> Config:
     with open(config_path, 'r', encoding='utf-8') as file:
         config_data = yaml.safe_load(file)
-        print(config_data)
         return Config(config_data, model, file_path)
 
 def get_config_path() -> str | None:
@@ -54,6 +51,7 @@ def main():
     parser.add_argument("action", help="The action to perform (e.g., fix, note, summary, all)", nargs='?')
     parser.add_argument("file_paths", help="The path(s) to the file(s) to process", nargs='*')
     parser.add_argument("--model", choices=model_map.keys(), default="qq", help="The model to use (qq: qwen32, qq72: qwen72, ss: sonnet3.5)")
+    parser.add_argument("--rebuild", action="store_true", help="Rebuild files regardless of modification date")
 
     args = parser.parse_args()
 
@@ -93,12 +91,13 @@ def main():
         if action == "all":
             # Process actions with no source first
             for config_action in [act for act in config.actions if not config.actions[act].source]:
-                process_file(config_action, file_path, config.actions[config_action])
+                process_file(config_action, file_path, config.actions[config_action], args.rebuild)
             # Process actions with a source next
             for config_action in [act for act in config.actions if config.actions[act].source]:
-                process_file(config_action, file_path, config.actions[config_action])
+                process_file(config_action, file_path, config.actions[config_action], args.rebuild)
         else:
-            process_file(action, file_path, config.actions[action])
+            process_file(action, file_path, config.actions[action], args.rebuild)
+
 
 if __name__ == "__main__":
     main()

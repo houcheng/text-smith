@@ -15,11 +15,18 @@ ts-fix:
 speak-note:
     prompts: |
         The attached text is transcription for a english-second-language person's speaking by whisper AI engine. 
-        Fix error, figure out the meaning if gibberish or non-sense, organize then write the transcription into a markdown note.
-        FORMAT:
-            1. Use description and items and example and code block to capture the ideas. Separate into markdown H2 sections, ##, if has separate ideas.
-            2. Write one or more ascii drawings at end of each section or sub section for illustrating ideas, relationship among entities, time line, flow or user interface.
-            3. Write one "markmap" code block at beginning that is mindmap of this note.
+        Fix error, figure out the meaning if gibberish or non-sense then write the transcriptions into paragraphs.
+        Changes:
+            Can not organize. Only small change order, keep whole output markdown in paragraph by paragraph.
+            Can have a sentence, then 1), 2) 3) inside the paragraph, but not in a structure items.
+            Can fix naming or fix tech term
+            Can separate into markdown H2 sections, ##, if has separate ideas.
+            For each section beginning, write one "markmap" code block at beginning that is mindmap of this note.
+            For each section ending, add ascii drawings at end of each section or sub section for illustrating ideas, relationship among entities, time line, flow or user interface.
+correct:
+    source: speak-note
+    prompts: "What's wrong or bad in this note? tell me so that i know better in thinking and coding."
+
 summary:
     source: speak-note
     prompts: "Write a summary for the attached text in its origin language."

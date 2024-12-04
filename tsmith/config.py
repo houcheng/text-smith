@@ -34,7 +34,7 @@ class ActionConfig:
 class Config:
     def __init__(self, config_data, model: str, file_path: str | None = None):
         self.actions = {}
-        print(config_data)
+        #print(config_data)
         for key in config_data.keys():
             timestamp_chunk_size = config_data[key].get('timestamp_chunk_size')
             if timestamp_chunk_size:

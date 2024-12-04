@@ -1,14 +1,13 @@
 import os
 import requests
 
-import os
-
 from config import ActionConfig
 
 def get_system_prompts():
     system_prompts_path = os.path.join(os.path.dirname(__file__), 'system_prompts.txt')
     with open(system_prompts_path, 'r', encoding='utf-8') as file:
         return file.read()
+
 def call_openrouter_api(file_content: str, user_prompts: str, model: str, cache: bool) -> str:
     # Environment variables used:
     # - OPENROUTER_API_KEY: Required for API authentication
@@ -16,7 +15,7 @@ def call_openrouter_api(file_content: str, user_prompts: str, model: str, cache:
     # - YOUR_SITE_NAME: Optional, for including your app on openrouter.ai rankings
     # Returns the output text from the API
     print(f"Calling OpenRouter API {len(file_content)} bytes, model: {model}, cache: {cache}")
-    print(f"Content: ", file_content)
+    # print(f"Content: ", file_content)
     api_key = os.getenv('OPENROUTER_API_KEY')
     if not api_key:
         raise ValueError("OPENROUTER_API_KEY environment variable is not set")
@@ -24,8 +23,8 @@ def call_openrouter_api(file_content: str, user_prompts: str, model: str, cache:
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
     }
-    your_site_url = os.getenv('YOUR_SITE_URL')
-    your_site_name = os.getenv('YOUR_SITE_NAME')
+    your_site_url = os.getenv('www.github.com/houcheng/text-smith')
+    your_site_name = 'text-smith'
     if your_site_url:
         headers["HTTP-Referer"] = your_site_url  # Optional, for including your app on openrouter.ai rankings.
     if your_site_name:
@@ -72,8 +71,6 @@ def call_openrouter_api(file_content: str, user_prompts: str, model: str, cache:
         # print("Response content:", response_content)
     return response_content
 
-import os.path
-
 class ChunkCutter:
     def load(self, file_path):
         pass
@@ -107,22 +104,27 @@ class TimestampChunkCutter(ChunkCutter):
             chunk_text = "".join(chunk_timestamps)
             yield chunk_text
 
-
-def process_file(action, file_path, action_config: ActionConfig):
-    # Update file_path from meeting-20241225.md to meeting-meeting-20241225[fix].md if action_config.source is fix
+def process_file(action, file_path, action_config: ActionConfig, rebuild: bool):
+    # Update file_path from meeting-20241225.md to meeting-20241225@fix.md if action_config.source is fix
     if action_config.source:
         source_action = action_config.source
         source_base_name, source_ext = os.path.splitext(file_path)
-        source_output_file_path = f"{source_base_name}[{source_action}]{source_ext}"
+        # Remove any existing action tag before appending the new one
+        if '@' in source_base_name:
+            source_base_name = source_base_name[:source_base_name.rfind('@')]
+        source_output_file_path = f"{source_base_name}@{source_action}{source_ext}"
         if not os.path.exists(source_output_file_path):
             print(f"Source file '{source_output_file_path}' does not exist for action '{action}'. Skipping processing.")
             return
         file_path = source_output_file_path
 
     base_name, ext = os.path.splitext(file_path)
-    output_file_path = f"{base_name}[{action}]{ext}"
+    # Remove any existing action tag before appending the new one
+    if '@' in base_name:
+        base_name = base_name[:base_name.rfind('@')]
+    output_file_path = f"{base_name}@{action}{ext}"
 
-    if os.path.exists(output_file_path) and os.path.getmtime(output_file_path) > os.path.getmtime(file_path):
+    if not rebuild and os.path.exists(output_file_path) and os.path.getmtime(output_file_path) > os.path.getmtime(file_path):
         print(f"Output file '{output_file_path}' is newer than input file '{file_path}'. Skipping processing.")
         return
 
@@ -139,11 +141,6 @@ def process_file(action, file_path, action_config: ActionConfig):
         else:
             file_content = file.read()
             output_text = call_openrouter_api(file_content, system_prompts, action_config.model, action_config.cache)
-
-    with open(output_file_path, 'w', encoding='utf-8') as output_file:
-        output_file.write(output_text)
-
-    print(f"Output written to {output_file_path}")
 
     with open(output_file_path, 'w', encoding='utf-8') as output_file:
         output_file.write(output_text)

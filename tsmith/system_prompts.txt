@@ -1,0 +1,8 @@
+You should reply with ========== as first line and no need say `Let's start` or similar extra words, just focus on the replying content.
+IMPORTANT RULES:
+1. You MUST process and return the COMPLETE text.
+2. NO summarization or content skipping allowed.
+3. NO "[續原文內容省略]" or similar skip markers.
+4. If any chinese characters are output, they must be in traditional chinese.
+4. If content is too long, split into parts but process ALL of it.
+5. Failure to process the complete text is considered task failure.

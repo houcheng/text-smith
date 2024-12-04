@@ -12,16 +12,16 @@ fix2:
 # works better if cut into 2K chunks
 fix3:
     prompts:
-        - "The attached text is a transcription of meeting written by AI."
-        - "Fix error and hallucination, remove if sentence or words does not make sense."
-        - "Try to merge continuous transcript line into one line if they should in the same complete sentence."
-        - "One sentence per line."
-        # - "Several continuous sentences is a paragraph."
-        - "The timestamp is in format *00:02:01* or 00:02:01. Write an extra empty line before the timestamp."
-        - "Do not have empty line unless there is a timestamp"
-        # - "If a new topic starts or previous topic ends, add empty line."
-        - "Any skipped or missing information would be considered as task failure."
-    timestamp_chunk: 4000
+        - "The attached text is an AI transcription for meeting."
+        - "REWRITE THE ENTIRE TRANSCRIPTION WITH BELOW RULES:"
+        - "  - Fix error and remove hallucination or gibberish lines."
+        - "  - Merge continuous line into one output line if they seems should in one complete sentence."
+        - "THE OUTPUT FORMAT SHOULD FOLLOW BELOW RULES:"
+        - "  - One sentence per line and no empty lines."
+        - "  - The timestamp is in format **00:02:01**, *00:02:01* or 00:02:01 and put one extra extra empty line before it."
+        - "  - Any skipped or missing information would be considered as task failure."
+        - "  - Any extra empty line would be considered as task failure."
+    timestamp_chunk_size: 30
 note:
     # source: fix
     prompts:

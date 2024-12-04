@@ -1,0 +1,18 @@
+fix:
+    prompts:
+        - "The attached text is transaction text by AI."
+        - "Fix error and modify if sentence does not make sense."
+        - "Fix hallucination and make the sentence more readable."
+        - "Make the article more readable and separate into paragraphs."
+        - "Do not changes too much"
+        - "Must write in its origin language"
+note:
+    source: fix
+    prompts:
+        - "Write note for the attached text in its origin language."
+    cache: true
+summary:
+    source: fix
+    prompts:
+        - "Write a summary for the attached text in its origin language."
+    cache: true

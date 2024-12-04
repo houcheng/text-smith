@@ -17,56 +17,39 @@ def get_action_from_path(file_path):
     return None
 
 
-def load_config(config_path, model) -> Config:
-    with open(config_path, 'r') as file:
+def load_config(config_path, model, file_path: str | None = None) -> Config:
+    with open(config_path, 'r', encoding='utf-8') as file:
         config_data = yaml.safe_load(file)
         print(config_data)
-        return Config(config_data, model)
+        return Config(config_data, model, file_path)
 
 def get_config_path() -> str | None:
-    if os.path.exists('../.ts.conf.yml'):
-        return '.ts.conf.yml'
+    if os.path.exists('.tsmith.conf.yml'):
+        return '.tsmith.conf.yml'
     home_dir = os.path.expanduser('~')
-    if os.path.exists(os.path.join(home_dir, '../.ts.conf.yml')):
-        return os.path.join(home_dir, '../.ts.conf.yml')
+    if os.path.exists(os.path.join(home_dir, '.tsmith.conf.yml')):
+        return os.path.join(home_dir, '.tsmith.conf.yml')
     return None
 
 
 def process_init_command() -> None:
-    config_path = '../.ts.conf.yml'
+    config_path = '.tsmith.conf.yml'
     if os.path.exists(config_path):
         print(f"Warning: Configuration file '{config_path}' already exists in the current directory.")
     else:
-        default_config = """fix:
-    prompts:
-        - "The attached text is transaction text by AI."
-        - "Fix error and modify if sentence does not make sense."
-        - "Fix hallucination and make the sentence more readable."
-        - "Make the article more readable and separate into paragraphs."
-        - "Do not changes too much"
-        - "Must write in its origin language"
-note:
-    source: fix
-    prompts:
-        - "Write note for the attached text in its origin language."
-    cache: true
-summary:
-    source: fix
-    prompts:
-        - "Write a summary for the attached text in its origin language."
-    cache: true
-"""
-        with open(config_path, 'w') as file:
+        default_config_path = os.path.join(os.path.dirname(__file__), 'default_tsmith_config.yml')
+        with open(default_config_path, 'r', encoding='utf-8') as file:
+            default_config = file.read()
+        with open(config_path, 'w', encoding='utf-8') as file:
             file.write(default_config)
         print(f"Configuration file '{config_path}' created in the current directory.")
 
 
 def main():
-    print("tsmith command is running.")
     import sys
     import argparse
 
-    parser = argparse.ArgumentParser(description="Process files with Openrouter API\nDefault config is .ts.conf.yml in home or current directory")
+    parser = argparse.ArgumentParser(description="Process files with Openrouter API\nDefault config is .tsmith.conf.yml in home or current directory")
     parser.add_argument("command", help="The command to perform (e.g., write, init)")
     parser.add_argument("action", help="The action to perform (e.g., fix, note, summary, all)", nargs='?')
     parser.add_argument("file_paths", help="The path(s) to the file(s) to process", nargs='*')

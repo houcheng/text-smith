@@ -5,14 +5,18 @@ import os
 
 from config import ActionConfig
 
-
+def get_system_prompts():
+    system_prompts_path = os.path.join(os.path.dirname(__file__), 'system_prompts.txt')
+    with open(system_prompts_path, 'r', encoding='utf-8') as file:
+        return file.read()
 def call_openrouter_api(file_content: str, user_prompts: str, model: str, cache: bool) -> str:
     # Environment variables used:
     # - OPENROUTER_API_KEY: Required for API authentication
     # - YOUR_SITE_URL: Optional, for including your app on openrouter.ai rankings
     # - YOUR_SITE_NAME: Optional, for including your app on openrouter.ai rankings
     # Returns the output text from the API
-
+    print(f"Calling OpenRouter API {len(file_content)} bytes, model: {model}, cache: {cache}")
+    print(f"Content: ", file_content)
     api_key = os.getenv('OPENROUTER_API_KEY')
     if not api_key:
         raise ValueError("OPENROUTER_API_KEY environment variable is not set")
@@ -34,15 +38,7 @@ def call_openrouter_api(file_content: str, user_prompts: str, model: str, cache:
           "content": [
               {"type": "text", "text": "Given the attached text below:"},
               {"type": "text", "text": file_content},
-              # {"type": "text", "text": "You should reply with ========== as first line and no need say `Let's start ` or similar extra words, just focus on the replying content."}
-              {"type": "text", "text": """You should reply with ========== as first line and no need say `Let's start` or similar extra words, just focus on the replying content.
-         IMPORTANT RULES:
-         1. You MUST process and return the COMPLETE text
-         2. NO summarization or content skipping allowed
-         3. NO "[續原文內容省略]" or similar skip markers
-         4. If any chinese characters are output, they must be in traditional chinese
-         4. If content is too long, split into parts but process ALL of it
-         5. Failure to process the complete text is considered task failure"""} ]
+              {"type": "text", "text": """"""} ]
         },
         # 1
         {"role": "user", "content": [{"type": "text", "text": user_prompts}]}
@@ -55,22 +51,61 @@ def call_openrouter_api(file_content: str, user_prompts: str, model: str, cache:
     }
     response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=body)
     response.raise_for_status()  # Raise an error for bad responses
-    response_content = response.json()['choices'][0]['message']['content']
+    response_content = None
+    try:
+        response_content = response.json()['choices'][0]['message']['content']
+    except:
+        print("Error the response is: ", response.json())
+    
     if not response_content:
         print("Error the response is: ", response.json())
         raise ValueError("Response content is empty")
 
     lines = response_content.split('\n')
-    if lines[0].startswith('====='):
-        response_content = '\n'.join(lines[1:])
+    for i, line in enumerate(lines):
+        if line.startswith('====='):
+            response_content = '\n'.join(lines[i+1:])
+            break
     else:
         print("Warning: Format not aligned. The response does not start with '====='.")
-        print(response.json())
-    # print(response_content)
-    # may cause problem
+        # print("Response content:", response_content)
     return response_content
 
 import os.path
+
+class ChunkCutter:
+    def load(self, file_path):
+        pass
+
+    def get_chunk(self):
+        yield ""
+
+class TimestampChunkCutter(ChunkCutter):
+    def __init__(self, chunk_size):
+        self.chunk_size = chunk_size
+        self.timestamps = []
+
+    def load(self, file_path):
+        with open(file_path, 'r', encoding='utf-8') as file:
+            lines = file.readlines()
+            for line in lines:
+                if line.strip().startswith("*") or line.strip().startswith("0"):
+                    if len(line.strip()) >= 8 and line.strip()[0:2].isdigit() and line.strip()[2] == ":" and line.strip()[3:5].isdigit() and line.strip()[5] == ":" and line.strip()[6:8].isdigit():
+                        self.timestamps.append(line)
+
+    def get_chunk(self):
+        i = 0
+        while i < len(self.timestamps):
+            chunk_timestamps = []
+            for _ in range(self.chunk_size):
+                if i < len(self.timestamps):
+                    chunk_timestamps.append(self.timestamps[i])
+                    i += 1
+                else:
+                    break
+            chunk_text = "".join(chunk_timestamps)
+            yield chunk_text
+
 
 def process_file(action, file_path, action_config: ActionConfig):
     # Update file_path from meeting-20241225.md to meeting-meeting-20241225[fix].md if action_config.source is fix
@@ -83,9 +118,6 @@ def process_file(action, file_path, action_config: ActionConfig):
             return
         file_path = source_output_file_path
 
-    with open(file_path, 'r', encoding='utf-8') as file:
-        file_content = file.read()
-
     base_name, ext = os.path.splitext(file_path)
     output_file_path = f"{base_name}[{action}]{ext}"
 
@@ -94,7 +126,23 @@ def process_file(action, file_path, action_config: ActionConfig):
         return
 
     system_prompts = action_config.get_prompts()
-    output_text = call_openrouter_api(file_content, system_prompts, action_config.model, action_config.cache)
+    cutter = action_config.get_cutter()
+
+    output_text = ""
+    with open(file_path, 'r', encoding='utf-8') as file:
+        if cutter:
+            cutter.load(file_path)
+            # Process each chunk using the ChunkCutter's get_chunk method
+            for chunk in cutter.get_chunk():
+                output_text += call_openrouter_api(chunk, system_prompts, action_config.model, action_config.cache)
+        else:
+            file_content = file.read()
+            output_text = call_openrouter_api(file_content, system_prompts, action_config.model, action_config.cache)
+
+    with open(output_file_path, 'w', encoding='utf-8') as output_file:
+        output_file.write(output_text)
+
+    print(f"Output written to {output_file_path}")
 
     with open(output_file_path, 'w', encoding='utf-8') as output_file:
         output_file.write(output_text)

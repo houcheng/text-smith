@@ -1,27 +1,3 @@
-fix2:
-    prompts:
-        - "The attached text is a transcription of meeting written by AI."
-        - "Fix error and hallucination, modify if sentence does not make sense."
-        - "Remove the timestamps"
-        - "Merge the continuous sentences into a paragraph if they are related or no time gap. If time gap, break into paragraphs."
-        - "Write in its origin language, do not translate."
-        - "Write the fixed transcription as detail as possible and at least 10K characters."
-        - "Any skipped or missing information would be considered as task failure."
-    cache: true
-# this works good with qq72
-# works better if cut into 2K chunks
-fix3:
-    prompts:
-        - "The attached text is an AI transcription for meeting."
-        - "REWRITE THE ENTIRE TRANSCRIPTION WITH BELOW RULES:"
-        - "  - Fix error and remove hallucination or gibberish lines."
-        - "  - Merge continuous line into one output line if they seems should in one complete sentence."
-        - "THE OUTPUT FORMAT SHOULD FOLLOW BELOW RULES:"
-        - "  - One sentence per line and no empty lines."
-        - "  - The timestamp is in format **00:02:01**, *00:02:01* or 00:02:01 and put one extra extra empty line before it."
-        - "  - Any skipped or missing information would be considered as task failure."
-        - "  - Any extra empty line would be considered as task failure."
-    timestamp_chunk_size: 30
 note:
     # source: fix
     prompts:

@@ -1,17 +1,26 @@
-fix:
+# fix transcription with timestamp, good with qq72
+ts-fix:
     prompts: |
-        The attached text is transaction text by AI.
-        Fix error and modify if sentence does not make sense.
-        Fix hallucination and make the sentence more readable.
-        Make the article more readable and separate into paragraphs.
-        Do not changes too much.
-        Must write in its origin language.
-note:
-    source: fix
-    prompts: "Write note for the attached text in its origin language."
-    cache: true
+        The attached text is an AI transcription for meeting.
+        REWRITE THE ENTIRE TRANSCRIPTION WITH BELOW RULES:
+          - Fix error and remove hallucination or gibberish lines.
+          - Merge continuous line into one output line if they seems should in one complete sentence.
+        THE OUTPUT FORMAT SHOULD FOLLOW BELOW RULES:
+          - One sentence per line and no empty lines.
+          - The timestamp is in format **00:02:01**, *00:02:01* or 00:02:01 and put one extra extra empty line before it.
+          - Any skipped or missing information would be considered as task failure.
+          - Any extra empty line would be considered as task failure.
+    timestamp_chunk_size: 30
+
+speak-note:
+    prompts: |
+        The attached text is transcription for a english-second-language person's speaking by whisper AI engine. 
+        Fix error, figure out the meaning if gibberish or non-sense, organize then write the transcription into a markdown note.
+        FORMAT:
+            1. Use description and items and example and code block to capture the ideas. Separate into markdown H2 sections, ##, if has separate ideas.
+            2. Write one or more ascii drawings at end of each section or sub section for illustrating ideas, relationship among entities, time line, flow or user interface.
+            3. Write one "markmap" code block at beginning that is mindmap of this note.
 summary:
-    source: fix
-    prompts:
-        - "Write a summary for the attached text in its origin language."
+    source: speak-note
+    prompts: "Write a summary for the attached text in its origin language."
     cache: true

@@ -20,7 +20,7 @@ class ActionConfig:
         self.cutter = cutter
 
     def get_prompts(self):
-        return '\n'.join(self.prompts)
+        return self.prompts
 
     def get_model(self):
         return self.model

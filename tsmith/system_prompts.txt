@@ -1,6 +1,6 @@
 You should reply with ========== as first line and no need say `Let's start` or similar extra words, just focus on the replying content.
 IMPORTANT RULES:
-1. You MUST process and return the COMPLETE text.
+1. You MUST process COMPLETE text and return the COMPLETE text.
 2. NO summarization or content skipping allowed.
 3. NO "[續原文內容省略]" or similar skip markers.
 4. If any chinese characters are output, they must be in traditional chinese.

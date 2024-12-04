@@ -31,6 +31,7 @@ def call_openrouter_api(file_content: str, user_prompts: str, model: str, cache:
     if your_site_name:
         headers["X-Title"] = your_site_name  # Optional. Shows in rankings on openrouter.ai.
 
+    system_prompts = get_system_prompts()
     # https://openrouter.ai/docs/prompt-caching
     messages = [
         # 0
@@ -38,7 +39,7 @@ def call_openrouter_api(file_content: str, user_prompts: str, model: str, cache:
           "content": [
               {"type": "text", "text": "Given the attached text below:"},
               {"type": "text", "text": file_content},
-              {"type": "text", "text": """"""} ]
+              {"type": "text", "text": system_prompts} ]
         },
         # 1
         {"role": "user", "content": [{"type": "text", "text": user_prompts}]}

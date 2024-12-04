@@ -24,3 +24,18 @@ summary:
     source: speak-note
     prompts: "Write a summary for the attached text in its origin language."
     cache: true
+
+flow:
+    source: speak-note
+    prompts: |
+        The attached text is a transcription note.        
+        Draw ascii diagram of ideas in the attached text.
+        Also draw ascii diagram of ideas as entities and relations among entities in the attached text.
+    cache: true
+topic:
+    source: speak-note
+    prompts: |
+        The attached text is a transcription note.
+        find some topics during the discussion from start to end then draw ascii flow of these topics from top to bottom, start to end.
+        the topics should be less then 10.
+    cache: true

@@ -5,3 +5,4 @@ __pycache__/
 tsmith.egg-info/
 dist/
 examples/
+.tsmith.conf.yml
